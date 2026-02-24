@@ -33,7 +33,9 @@ The application detects hands from a live camera feed, measures the distance bet
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
+
+
 MILESTONE-2/
 │
 ├── app.py # Streamlit application
