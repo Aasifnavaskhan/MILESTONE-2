@@ -35,15 +35,14 @@ The application detects hands from a live camera feed, measures the distance bet
 
 ## 📁 Project Structure
 
-
 MILESTONE-2/
 │
-├── app.py # Streamlit application
-├── handgesture.py # Gesture and distance logic
-├── run_app.py # App launcher
-├── requirements.txt # Dependencies
-├── README.md # Project documentation
-└── LICENSE # License file
+├── app.py              # Streamlit application
+├── handgesture.py      # Gesture and distance logic
+├── run_app.py          # App launcher
+├── requirements.txt    # Dependencies
+├── README.md           # Project documentation
+└── LICENSE             # License file
 
 
 ---
