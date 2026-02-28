@@ -1,91 +1,122 @@
-# Gesture Recognition & Distance Measurement (Milestone 2)
+## 🟡 Milestone 2: Gesture Recognition and Distance Measurement
 
-This project implements a real-time **gesture recognition and distance measurement system** using **MediaPipe Hands**, **OpenCV**, and **Streamlit**.
-
-The application detects hands from a live camera feed, measures the distance between the **thumb tip and index finger tip**, and classifies gestures based on this distance. An interactive Streamlit interface is used to display live video, gesture status, distance values, and system performance.
+### 🎯 Objective
+The objective of Milestone 2 is to accurately recognize hand gestures by calculating the distance between the thumb tip and index finger tip and classifying gestures based on this distance.
 
 ---
 
-## 🚀 Features
-- Real-time hand detection using MediaPipe
-- Thumb–Index fingertip distance calculation
-- Gesture classification:
-  - **Open** (> 100 px)
-  - **Pinch** (40–100 px)
-  - **Closed** (< 40 px)
-- Detection of multiple hands
-- Distance and gesture calculated using the **first detected hand**
-- Streamlit-based UI with:
-  - Live camera feed
-  - Status panel
-  - Adjustable detection confidence
-  - Adjustable tracking confidence
-  - Max hands selection
-  - FPS display
+### 🛠 Functionalities Implemented
+- Real-time hand landmark detection
+- Calculation of Euclidean distance between thumb and index finger
+- Gesture classification based on distance thresholds
+- Gesture annotation on live video feed
+- Display of calculated distance values as overlays
+- Real-time performance monitoring (FPS)
+
+---
+
+### ⚙ Gesture Classification Logic
+The gesture is classified based on the measured distance between the thumb and index finger tips:
+
+| Distance Between Fingers (pixels) | Gesture |
+|---------------------------------|---------|
+| Less than 40                     | Closed  |
+| Between 40 and 100               | Pinch   |
+| Greater than 100                 | Open    |
+
+The Euclidean distance is calculated for every video frame to ensure real-time responsiveness.
+
+---
+
+### Output
+- Live camera feed with gesture annotations
+- Hand landmarks and connections displayed
+- Line connecting thumb tip and index finger tip
+- Calculated distance shown as overlay
+- Gesture label displayed on screen
 
 ---
 
 ## 🛠 Technologies Used
 - **Python**
-- **OpenCV**
-- **MediaPipe**
-- **Streamlit**
+- **OpenCV** – Video capture and drawing utilities
+- **MediaPipe Hands** – Hand landmark detection
+- **Streamlit** – Interactive web interface
+- **NumPy** – Numerical computations
+- **PyCAW (Windows)** – System audio control (Milestone 1)
+
+
 
 ---
+
 
 ## 📁 Project Structure
 
-MILESTONE-2/
+```
+Gesture-Volume-Control-with-Hand-Gestures/
 │
-├── app.py              # Streamlit application
-├── handgesture.py      # Gesture and distance logic
-├── run_app.py          # App launcher
-├── requirements.txt    # Dependencies
+├── app.py              # Main Streamlit application
+├── handgesture.py      # Hand gesture detection & volume logic
+├── run_app.py          # Application launcher
+├── requirements.txt    # Project dependencies
 ├── README.md           # Project documentation
-└── LICENSE             # License file
+├── LICENSE             # License file
+└── .gitignore          # Ignored files
+---
+## ▶️ How to Run the Project
 
+### Step 1: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Step 2: Run the Application
+```bash
+python run_app.py
+```
+
+OR
+
+```bash
+streamlit run app.py
+```
+
+Step 3: Usage Instructions
+Click Start Camera to activate the webcam
+
+Place your hand in front of the camera
+
+Move thumb and index finger to:
+
+Adjust volume (Milestone 1)
+
+Observe distance and gesture classification (Milestone 2)
+
+Close your hand to mute the system
+
+Click Stop Camera to end the session
+
+🧪 Observations and Results
+The system performs accurately under adequate lighting conditions
+
+Gesture recognition is stable with minimal latency
+
+Distance-based control provides intuitive interaction
+
+Streamlit interface offers clear real-time feedback
+
+
+✅ Conclusion
+The combined implementation of Milestone 1 and Milestone 2 successfully demonstrates a real-time gesture-based interaction system. Milestone 1 establishes reliable volume control using hand gestures, while Milestone 2 enhances the system with accurate gesture recognition and distance measurement. Together, these milestones form a robust foundation for advanced gesture-controlled applications.
 
 ---
 
-## ▶ How to Run the Project
+## 👤 Author
+Aasif N
 
-### 1️⃣ Install Dependencies
-```bash
-pip install -r requirements.txt
-2️⃣ Run the Application
-streamlit run app.py
+---
 
-or
-
-python run_app.py
-📸 Output
-
-Live camera feed with hand landmarks
-
-Distance measurement overlay (in pixels)
-
-Gesture classification display
-
-Status indicators:
-
-Camera status
-
-Hands detected
-
-Distance value
-
-Gesture type
-
-FPS
-
-🎓 Academic Note
-
-This project is developed as Milestone 2 (Weeks 3–4) for the Gesture Recognition and Distance Measurement Module.
-
-📌 Author
-
-Asifnava Khan
-
-📄 License
-
+## 📜 License
 This project is licensed under the MIT License.
+
+
