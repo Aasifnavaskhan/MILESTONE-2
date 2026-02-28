@@ -62,6 +62,8 @@ Gesture-Volume-Control-with-Hand-Gestures/
 ├── README.md           # Project documentation
 ├── LICENSE             # License file
 └── .gitignore          # Ignored files
+```
+
 ---
 ## ▶️ How to Run the Project
 
