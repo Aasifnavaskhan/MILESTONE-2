@@ -60,8 +60,8 @@ Gesture-Volume-Control-with-Hand-Gestures/
 ├── run_app.py          # Application launcher
 ├── requirements.txt    # Project dependencies
 ├── README.md           # Project documentation
-├── LICENSE             # License file
-└── .gitignore          # Ignored files
+└── LICENSE             # License file
+
 ```
 
 ---
