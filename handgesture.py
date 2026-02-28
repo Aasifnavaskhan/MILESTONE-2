@@ -1,11 +1,15 @@
-# handgesture.py
-
 import cv2
 import mediapipe as mp
+import numpy as np
 import math
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
-class GestureDistanceController:
-    def __init__(self, det_conf=0.7, trk_conf=0.7, max_hands=2):
+
+class GestureController:
+    def __init__(self, det_conf=0.7, trk_conf=0.7, max_hands=1):
+
         self.mp_hands = mp.solutions.hands
         self.mp_draw = mp.solutions.drawing_utils
 
@@ -15,6 +19,16 @@ class GestureDistanceController:
             max_num_hands=max_hands
         )
 
+        # Audio (Windows)
+        devices = AudioUtilities.GetSpeakers()
+        interface = devices.Activate(
+            IAudioEndpointVolume._iid_, CLSCTX_ALL, None
+        )
+        self.volume_ctrl = cast(interface, POINTER(IAudioEndpointVolume))
+        self.min_vol, self.max_vol = self.volume_ctrl.GetVolumeRange()[:2]
+
+        self.is_muted = False
+
     def process_frame(self, frame):
         h, w, _ = frame.shape
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -22,47 +36,74 @@ class GestureDistanceController:
 
         distance = None
         gesture = "None"
+        volume_percent = None
         hand_detected = 0
 
         if results.multi_hand_landmarks:
             hand_detected = len(results.multi_hand_landmarks)
 
-            # Draw ALL hands
             for handLms in results.multi_hand_landmarks:
                 self.mp_draw.draw_landmarks(
                     frame, handLms, self.mp_hands.HAND_CONNECTIONS
                 )
 
-            # Use FIRST hand for calculation
-            first_hand = results.multi_hand_landmarks[0]
-
-            thumb = first_hand.landmark[4]
-            index = first_hand.landmark[8]
+            hand = results.multi_hand_landmarks[0]
+            thumb = hand.landmark[4]
+            index = hand.landmark[8]
 
             x1, y1 = int(thumb.x * w), int(thumb.y * h)
             x2, y2 = int(index.x * w), int(index.y * h)
 
             distance = int(math.hypot(x2 - x1, y2 - y1))
 
+            # --------- GESTURE LOGIC ---------
             if distance < 40:
                 gesture = "Closed"
-            elif distance < 100:
-                gesture = "Pinch"
+                self.volume_ctrl.SetMute(1, None)
+                self.is_muted = True
+                volume_percent = 0
+
             else:
-                gesture = "Open"
+                self.volume_ctrl.SetMute(0, None)
+                self.is_muted = False
 
-            cv2.circle(frame, (x1, y1), 10, (0, 255, 0), cv2.FILLED)
-            cv2.circle(frame, (x2, y2), 10, (0, 255, 0), cv2.FILLED)
-            cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
+                if distance < 100:
+                    gesture = "Pinch"
+                else:
+                    gesture = "Open"
 
-            cv2.putText(frame, f"Distance: {distance} px",
-                        (30, 50),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.9,
-                        (0, 255, 255), 2)
+                clipped = np.clip(distance, 40, 180)
+                vol = np.interp(
+                    clipped, [40, 180],
+                    [self.min_vol, self.max_vol]
+                )
+                self.volume_ctrl.SetMasterVolumeLevel(vol, None)
+
+                volume_percent = int(
+                    np.interp(clipped, [40, 180], [0, 100])
+                )
+
+            # --------- VISUALS ---------
+            color = (0, 0, 255) if self.is_muted else (0, 255, 0)
+
+            cv2.circle(frame, (x1, y1), 10, color, cv2.FILLED)
+            cv2.circle(frame, (x2, y2), 10, color, cv2.FILLED)
+            cv2.line(frame, (x1, y1), (x2, y2), color, 3)
 
             cv2.putText(frame, f"Gesture: {gesture}",
-                        (30, 90),
+                        (30, 40),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+                        (255, 255, 0), 2)
+
+            cv2.putText(frame, f"Volume: {volume_percent}%",
+                        (30, 80),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.9,
                         (0, 255, 255), 2)
 
-        return frame, distance, gesture, hand_detected
+            if self.is_muted:
+                cv2.putText(frame, "MUTED",
+                            (30, 120),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1.1,
+                            (0, 0, 255), 3)
+
+        return frame, distance, gesture, volume_percent, hand_detected
