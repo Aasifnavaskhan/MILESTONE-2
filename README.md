@@ -83,35 +83,43 @@ OR
 streamlit run app.py
 ```
 
-Step 3: Usage Instructions
-Click Start Camera to activate the webcam
-
-Place your hand in front of the camera
-
-Move thumb and index finger to:
-
-Adjust volume (Milestone 1)
-
-Observe distance and gesture classification (Milestone 2)
-
-Close your hand to mute the system
-
-Click Stop Camera to end the session
-
-🧪 Observations and Results
-The system performs accurately under adequate lighting conditions
-
-Gesture recognition is stable with minimal latency
-
-Distance-based control provides intuitive interaction
-
-Streamlit interface offers clear real-time feedback
-
-
-✅ Conclusion
-The combined implementation of Milestone 1 and Milestone 2 successfully demonstrates a real-time gesture-based interaction system. Milestone 1 establishes reliable volume control using hand gestures, while Milestone 2 enhances the system with accurate gesture recognition and distance measurement. Together, these milestones form a robust foundation for advanced gesture-controlled applications.
+### Step 3: Usage Instructions
+- Click **Start Camera** to activate the webcam  
+- Place your hand in front of the camera  
+- Move thumb and index finger to:
+  - Adjust volume (**Milestone 1**)  
+  - Observe distance and gesture classification (**Milestone 2**)  
+- Close your hand to mute the system  
+- Click **Stop Camera** to end the session  
 
 ---
+
+## 🧪 Observations and Results
+- System performs accurately under adequate lighting conditions  
+- Gesture recognition is stable with minimal latency  
+- Distance-based control provides intuitive interaction  
+- Streamlit interface offers clear real-time feedback  
+
+---
+
+## 🚀 Future Scope
+- Support for multi-hand gesture recognition  
+- Gesture calibration for different hand sizes  
+- Cross-platform audio control support  
+- Integration with other system controls (brightness, media playback)  
+- Deployment as a standalone desktop application  
+
+---
+
+## ✅ Conclusion
+The combined implementation of **Milestone 1** and **Milestone 2** successfully demonstrates a real-time gesture-based interaction system.  
+- **Milestone 1** establishes reliable volume control using hand gestures  
+- **Milestone 2** enhances the system with accurate gesture recognition and distance measurement  
+
+Together, these milestones form a robust foundation for advanced gesture-controlled applications.
+
+---
+
 
 ## 👤 Author
 Aasif N
