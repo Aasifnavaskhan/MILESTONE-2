@@ -1,13 +1,12 @@
-# app.py
-
 import streamlit as st
 import cv2
 import time
-from handgesture import GestureDistanceController
+import pythoncom
+from handgesture import GestureController
 
 # ================= PAGE CONFIG =================
 st.set_page_config(
-    page_title="Gesture Recognition & Distance Measurement",
+    page_title="Milestone 2: Gesture Recognition & Volume Control",
     layout="wide"
 )
 
@@ -34,7 +33,7 @@ st.markdown("""
 
 # ================= TITLE =================
 st.markdown(
-    '<div class="title">GESTURE RECOGNITION & DISTANCE MEASUREMENT</div>',
+    '<div class="title">MILESTONE 2</div>',
     unsafe_allow_html=True
 )
 
@@ -43,6 +42,10 @@ if "run" not in st.session_state:
     st.session_state.run = False
 if "fps" not in st.session_state:
     st.session_state.fps = 0
+if "volume" not in st.session_state:
+    st.session_state.volume = 0
+if "latency" not in st.session_state:
+    st.session_state.latency = 0
 
 # ================= LAYOUT =================
 left, center, right = st.columns([1.3, 3.5, 1.5])
@@ -54,9 +57,13 @@ with left:
 
     cam_status = st.empty()
     hand_status = st.empty()
-    dist_status = st.empty()
     gesture_status = st.empty()
+    vol_status = st.empty()
+    latency_status = st.empty()
     fps_status = st.empty()
+
+    st.markdown("### Volume Level")
+    vol_bar = st.progress(0)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -71,9 +78,9 @@ with right:
     st.markdown('<div class="panel right">', unsafe_allow_html=True)
     st.subheader("Controls")
 
-    det_conf = st.slider("Detection Confidence", 0.5, 1.0, 0.7)
-    trk_conf = st.slider("Tracking Confidence", 0.5, 1.0, 0.7)
-    max_hands = st.slider("Max Hands", 1, 2, 2)
+    det_conf = st.slider("Detection Confidence", 0.5, 1.0, 0.8)
+    trk_conf = st.slider("Tracking Confidence", 0.5, 1.0, 0.8)
+    max_hands = st.slider("Max Hands", 1, 2, 1)
 
     c1, c2 = st.columns(2)
     start = c1.button("Start Camera")
@@ -89,8 +96,9 @@ if stop:
 
 # ================= CAMERA LOOP =================
 if st.session_state.run:
+    pythoncom.CoInitialize()
     cap = cv2.VideoCapture(0)
-    controller = GestureDistanceController(det_conf, trk_conf, max_hands)
+    controller = GestureController(det_conf, trk_conf, max_hands)
     prev_time = 0
 
     while st.session_state.run:
@@ -99,18 +107,36 @@ if st.session_state.run:
             break
 
         frame = cv2.flip(frame, 1)
+        frame_start = time.time()
 
-        frame, distance, gesture, hand_detected = controller.process_frame(frame)
+        frame, distance, gesture, volume, hands = controller.process_frame(frame)
+
+        st.session_state.latency = int(
+            (time.time() - frame_start) * 1000
+        )
+
+        if volume is not None:
+            st.session_state.volume = volume
 
         curr_time = time.time()
         st.session_state.fps = int(1 / (curr_time - prev_time + 0.0001))
         prev_time = curr_time
 
         cam_status.markdown("📷 Camera: **Active**")
-        hand_status.markdown(f"✋ Hands Detected: **{hand_detected}**")
-        dist_status.markdown(f"📏 Distance: **{distance if distance else 0} px**")
+        hand_status.markdown(f"✋ Hands Detected: **{hands}**")
         gesture_status.markdown(f"🖐 Gesture: **{gesture}**")
+
+        if gesture == "Closed":
+            vol_status.markdown("🔇 **Muted (Closed Gesture)**")
+        else:
+            vol_status.markdown(f"🔊 Volume: **{st.session_state.volume}%**")
+
+        latency_status.markdown(
+            f"⏱ Latency: **{st.session_state.latency} ms**"
+        )
         fps_status.markdown(f"⚡ FPS: **{st.session_state.fps}**")
+
+        vol_bar.progress(min(st.session_state.volume, 100) / 100)
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         video_placeholder.image(frame, use_container_width=True)
